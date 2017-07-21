@@ -18,7 +18,7 @@
     function getPersons() {
         return new Promise((resolve, reject) => {
             if (Math.floor(Math.random() * 5) % 5 === 0) {
-                reject('error');
+                reject('Error while try to getting persons');
             } else {
                 setTimeout(() => {
                     resolve([{firstName: 'Robin', lastName: 'Coma Delperier'}, {firstName: 'Matthieu', lastName: 'Mauny'}, {firstName: 'Alex', lastName: 'Escudero'}]);
@@ -37,28 +37,21 @@
         });
     };
 
-    getPersons()
-        .then(
-            personsAttributes => personsAttributes.map(attributes => new Person(attributes)),
-            error => console.error(error)
-        )
-        .then(
-            persons => {
-                console.log(persons);
-                const [person1, person2] = persons;
-                return {person1, person2};
-            }
-        )
-        .then(
-            ({person1, person2}) => {
-                person1.getIn();
-                person2.ringBell(3);
-                return [person1, person2];
-            }
-        )
+    async function greetPersons() {
+        const personsAttributes = await getPersons();
+        return personsAttributes.map(attributes => new Person(attributes));
+    }
+
+    greetPersons()
         .then(persons => {
+            const [person1, person2] = persons;
+            person1.getIn();
+            person2.ringBell(3);
+
             const greeter = new Greeter('Greetings, kind ', ', have a nice day');
-            const greetings = greeter.welcomePersons(persons);
+            const greetings = greeter.welcomePersons([person1, person2]);
             console.log(greetings);
-        });
+            console.log(persons);
+        })
+        .catch(error => console.error(error));
 }
