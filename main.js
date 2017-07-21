@@ -1,9 +1,7 @@
 {
-    function Person(firstName, lastName) {
-        Object.assign(this, {
-            firstName,
-            lastName
-        });
+    function Person({firstName, lastName}) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
     Object.assign(Person.prototype, {
         fullName() {
@@ -18,7 +16,10 @@
     });
 
     const persons = [{firstName: 'Robin', lastName: 'Coma Delperier'}, {firstName: 'Matthieu', lastName: 'Mauny'}, {firstName: 'Alex', lastName: 'Escudero'}]
-        .map(attributes => new Person(attributes.firstName, attributes.lastName));
+        .map(attributes => new Person(attributes));
+    const [person1, person2] = persons;
+    person1.getIn();
+    person2.ringBell(3);
 
     function Greeter(messagePrefix, messageSuffix) {
         this.prefix = messagePrefix;
@@ -31,7 +32,7 @@
     };
 
     const greeter = new Greeter('Greetings, kind ', ', have a nice day');
-    const greetings = greeter.welcomePersons(persons);
+    const greetings = greeter.welcomePersons([person1, person2]);
     console.log(greetings);
     console.log(persons);
 }
