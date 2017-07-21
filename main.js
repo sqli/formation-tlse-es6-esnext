@@ -10,16 +10,37 @@
         getIn() {
             console.log('Getting in the door');
         },
-        ringBell(times) {
-            new Array(times).fill().forEach((value, index) => console.log(`Ringing the bell #${index + 1}`));
+        *ringBell(times) {
+            for (let index = 0; index < times; index++) {
+                yield `Ringing the bell #${index + 1}`;
+            }
         }
     });
 
-    const persons = [{firstName: 'Robin', lastName: 'Coma Delperier'}, {firstName: 'Matthieu', lastName: 'Mauny'}, {firstName: 'Alex', lastName: 'Escudero'}]
-        .map(attributes => new Person(attributes));
-    const [person1, person2] = persons;
+    function *personsGenerator() {
+        yield {firstName: 'Robin', lastName: 'Coma Delperier'};
+        yield {firstName: 'Matthieu', lastName: 'Mauny'};
+        yield {firstName: 'Alex', lastName: 'Escudero'};
+    }
+    const personIterator = personsGenerator();
+    const person1 = new Person(personIterator.next().value);
+    const person2 = new Person(personIterator.next().value);
     person1.getIn();
-    person2.ringBell(3);
+
+    let ringBellIterator = person2.ringBell(3);
+    console.log(ringBellIterator.next());
+    console.log(ringBellIterator.next());
+    console.log(ringBellIterator.next());
+    console.log(ringBellIterator.next());
+
+    ringBellIterator = person2.ringBell(10);
+    console.log(ringBellIterator.next());
+    console.log(ringBellIterator.next());
+    for (let ringBell of ringBellIterator) {
+        console.log(ringBell);
+    }
+
+    const persons = [...personsGenerator()];
 
     function Greeter(messagePrefix, messageSuffix) {
         this.prefix = messagePrefix;
