@@ -7,7 +7,7 @@
     }
     Greeter.prototype.welcomePersons = function (persons) {
         return persons.map((person) => {
-            return this.prefix + person.firstName + ' ' + person.lastName + this.suffix;
+            return `${this.prefix}<em>${person.firstName} ${person.lastName}</em>${this.suffix}`;
         });
     };
 
