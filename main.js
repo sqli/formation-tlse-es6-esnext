@@ -10,37 +10,22 @@
         getIn() {
             console.log('Getting in the door');
         },
-        *ringBell(times) {
-            for (let index = 0; index < times; index++) {
-                yield `Ringing the bell #${index + 1}`;
-            }
+        ringBell(times) {
+            new Array(times).fill().forEach((value, index) => console.log(`Ringing the bell #${index + 1}`));
         }
     });
 
-    function *personsGenerator() {
-        yield {firstName: 'Robin', lastName: 'Coma Delperier'};
-        yield {firstName: 'Matthieu', lastName: 'Mauny'};
-        yield {firstName: 'Alex', lastName: 'Escudero'};
+    function getPersons() {
+        return new Promise((resolve, reject) => {
+            if (Math.floor(Math.random() * 5) % 5 === 0) {
+                reject('error');
+            } else {
+                setTimeout(() => {
+                    resolve([{firstName: 'Robin', lastName: 'Coma Delperier'}, {firstName: 'Matthieu', lastName: 'Mauny'}, {firstName: 'Alex', lastName: 'Escudero'}]);
+                }, 1000);
+            }
+        });
     }
-    const personIterator = personsGenerator();
-    const person1 = new Person(personIterator.next().value);
-    const person2 = new Person(personIterator.next().value);
-    person1.getIn();
-
-    let ringBellIterator = person2.ringBell(3);
-    console.log(ringBellIterator.next());
-    console.log(ringBellIterator.next());
-    console.log(ringBellIterator.next());
-    console.log(ringBellIterator.next());
-
-    ringBellIterator = person2.ringBell(10);
-    console.log(ringBellIterator.next());
-    console.log(ringBellIterator.next());
-    for (let ringBell of ringBellIterator) {
-        console.log(ringBell);
-    }
-
-    const persons = [...personsGenerator()];
 
     function Greeter(messagePrefix, messageSuffix) {
         this.prefix = messagePrefix;
@@ -52,8 +37,28 @@
         });
     };
 
-    const greeter = new Greeter('Greetings, kind ', ', have a nice day');
-    const greetings = greeter.welcomePersons([person1, person2]);
-    console.log(greetings);
-    console.log(persons);
+    getPersons()
+        .then(
+            personsAttributes => personsAttributes.map(attributes => new Person(attributes)),
+            error => console.error(error)
+        )
+        .then(
+            persons => {
+                console.log(persons);
+                const [person1, person2] = persons;
+                return {person1, person2};
+            }
+        )
+        .then(
+            ({person1, person2}) => {
+                person1.getIn();
+                person2.ringBell(3);
+                return [person1, person2];
+            }
+        )
+        .then(persons => {
+            const greeter = new Greeter('Greetings, kind ', ', have a nice day');
+            const greetings = greeter.welcomePersons(persons);
+            console.log(greetings);
+        });
 }
